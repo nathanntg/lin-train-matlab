@@ -20,6 +20,10 @@ classdef Trainer < handle
         fit
         score
         
+        % limits
+        min_features = [];
+        max_features = [];
+        
         % debug
         debug = 0
     end
@@ -141,7 +145,7 @@ classdef Trainer < handle
             TR.folds = {};
             for i = 1:TR.folds_count
                 idx_start = 1 + (i - 1) * per_fold_count;
-                idx_end = max(i * per_fold_count, indices_count);
+                idx_end = min(i * per_fold_count, indices_count);
                 TR.folds{i} = indices(idx_start:idx_end);
             end
         end
@@ -269,7 +273,7 @@ classdef Trainer < handle
             while true
                 % if running forward selection or bidirectional 
                 % selection...
-                if forward
+                if forward && (~isscalar(TR.max_features) || length(col_indices) < TR.max_features)
                     % try adding a column
                     [new_col_indices, cur_score] = TR.doForwardSelection(col_indices, cur_score);
                     
@@ -287,7 +291,7 @@ classdef Trainer < handle
                 
                 % if running backwards selection or bidirectional
                 % selection...
-                if backward
+                if backward && (~isscalar(TR.min_features) || length(col_indices) > TR.min_features)
                     % try removing a column
                     [new_col_indices, cur_score] = TR.doBackwardSelection(col_indices, cur_score);
                     
