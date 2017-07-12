@@ -45,7 +45,7 @@ classdef SolverLogisticRegression < Solver
                 old_exp_y = exp_y;
             end
             
-            warning('Did not converge.');
+            warning('lintrain:logistic:notConverge', 'Did not converge.');
         end
         
         function y_hat = applyParameters(~, x, params)
